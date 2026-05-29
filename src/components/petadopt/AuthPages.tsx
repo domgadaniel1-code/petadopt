@@ -36,7 +36,8 @@ export default function AuthPages() {
       reviewCount: 12,
       isVerified: true,
     })
-    navigate('dashboard')
+    const role = email.includes('admin') ? 'ADMIN' : email.includes('refuge') ? 'SHELTER' : email.includes('elevage') ? 'BREEDER' : 'ADOPTER'
+    navigate(role === 'ADMIN' ? 'admin-dashboard' : role === 'SHELTER' || role === 'BREEDER' ? 'seller-dashboard' : 'dashboard')
   }
 
   const handleRegister = (e: React.FormEvent) => {

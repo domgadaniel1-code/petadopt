@@ -21,6 +21,8 @@ export interface User {
   rating: number
   reviewCount: number
   isVerified: boolean
+  isBanned?: boolean
+  createdAt?: string
 }
 
 export interface Animal {
@@ -137,6 +139,22 @@ interface PetAdoptStore {
   notifications: Notification[]
   unreadCount: number
   markNotificationRead: (id: string) => void
+
+  // Admin - Animals management
+  adminAnimals: Animal[]
+  addAnimal: (animal: Animal) => void
+  updateAnimal: (id: string, data: Partial<Animal>) => void
+  deleteAnimal: (id: string) => void
+  approveAnimal: (id: string) => void
+
+  // Admin - Users management
+  adminUsers: User[]
+  addUser: (user: User) => void
+  updateUser: (id: string, data: Partial<User>) => void
+  deleteUser: (id: string) => void
+  banUser: (id: string) => void
+  unbanUser: (id: string) => void
+  verifyUser: (id: string) => void
 }
 
 export const usePetAdoptStore = create<PetAdoptStore>((set, get) => ({
@@ -225,4 +243,20 @@ export const usePetAdoptStore = create<PetAdoptStore>((set, get) => ({
     const notifs = get().notifications.map(n => n.id === id ? { ...n, isRead: true } : n)
     set({ notifications: notifs, unreadCount: notifs.filter(n => !n.isRead).length })
   },
+
+  // Admin - Animals management
+  adminAnimals: [],
+  addAnimal: (animal) => set({ adminAnimals: [...get().adminAnimals, animal] }),
+  updateAnimal: (id, data) => set({ adminAnimals: get().adminAnimals.map(a => a.id === id ? { ...a, ...data } : a) }),
+  deleteAnimal: (id) => set({ adminAnimals: get().adminAnimals.filter(a => a.id !== id) }),
+  approveAnimal: (id) => set({ adminAnimals: get().adminAnimals.map(a => a.id === id ? { ...a, isApproved: true } : a) }),
+
+  // Admin - Users management
+  adminUsers: [],
+  addUser: (user) => set({ adminUsers: [...get().adminUsers, user] }),
+  updateUser: (id, data) => set({ adminUsers: get().adminUsers.map(u => u.id === id ? { ...u, ...data } : u) }),
+  deleteUser: (id) => set({ adminUsers: get().adminUsers.filter(u => u.id !== id) }),
+  banUser: (id) => set({ adminUsers: get().adminUsers.map(u => u.id === id ? { ...u, isBanned: true } : u) }),
+  unbanUser: (id) => set({ adminUsers: get().adminUsers.map(u => u.id === id ? { ...u, isBanned: false } : u) }),
+  verifyUser: (id) => set({ adminUsers: get().adminUsers.map(u => u.id === id ? { ...u, isVerified: true } : u) }),
 }))
