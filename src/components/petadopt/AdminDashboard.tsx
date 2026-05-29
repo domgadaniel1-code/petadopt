@@ -544,11 +544,6 @@ export default function AdminDashboard() {
                             <Button size="sm" variant="outline" className="flex-1 sm:flex-none sm:w-full text-xs gap-1.5 text-petblue border-petblue/30 hover:bg-petblue/10" onClick={() => { setUserForm(u); setSelectedItem(u); setShowEditUser(true) }}>
                               <Pencil className="h-3.5 w-3.5" /> Modifier
                             </Button>
-                            {!u.isVerified && (
-                              <Button size="sm" className="flex-1 sm:flex-none sm:w-full text-xs gap-1.5 bg-petblue hover:bg-petblue-dark text-white" onClick={() => verifyUser(u.id)}>
-                                <UserCheck className="h-3.5 w-3.5" /> Vérifier
-                              </Button>
-                            )}
                             {u.isBanned ? (
                               <Button size="sm" variant="outline" className="flex-1 sm:flex-none sm:w-full text-xs gap-1.5 text-green-600 border-green-300 hover:bg-green-50" onClick={() => unbanUser(u.id)}>
                                 <UserCheck className="h-3.5 w-3.5" /> Débannir
