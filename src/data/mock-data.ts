@@ -130,10 +130,10 @@ export const mockReviews: Review[] = [
 ]
 
 export const mockMessages: Message[] = [
-  { id: 'm1', senderId: 'u2', senderName: 'Refuge du Soleil', content: 'Bonjour ! Merci pour votre intérêt pour Max. Souhaitez-vous le rencontrer ?', isRead: false, createdAt: '2026-05-28T09:00:00Z' },
-  { id: 'm2', senderId: 'u3', senderName: 'Élevage Belle Patte', content: 'Bonjour, Buddy est toujours disponible. Nous pouvons organiser une visite cette semaine.', isRead: true, createdAt: '2026-05-27T15:30:00Z' },
-  { id: 'm3', senderId: 'u1', senderName: 'Marie Dupont', content: 'Merci pour les photos supplémentaires ! Il est adorable.', isRead: true, createdAt: '2026-05-26T10:15:00Z' },
-  { id: 'm4', senderId: 'u2', senderName: 'Refuge du Soleil', content: 'N\'hésitez pas à nous contacter si vous avez des questions sur Luna.', isRead: false, createdAt: '2026-05-29T07:00:00Z' },
+  { id: 'm1', senderId: 'u2', senderName: 'Refuge du Soleil', receiverId: 'u1', content: 'Bonjour ! Merci pour votre intérêt pour Max. Souhaitez-vous le rencontrer ?', isRead: false, createdAt: '2026-05-28T09:00:00Z' },
+  { id: 'm2', senderId: 'u3', senderName: 'Élevage Belle Patte', receiverId: 'u1', content: 'Bonjour, Buddy est toujours disponible. Nous pouvons organiser une visite cette semaine.', isRead: true, createdAt: '2026-05-27T15:30:00Z' },
+  { id: 'm3', senderId: 'u1', senderName: 'Marie Dupont', receiverId: 'u2', content: 'Merci pour les photos supplémentaires ! Il est adorable.', isRead: true, createdAt: '2026-05-26T10:15:00Z' },
+  { id: 'm4', senderId: 'u2', senderName: 'Refuge du Soleil', receiverId: 'u1', content: 'N\'hésitez pas à nous contacter si vous avez des questions sur Luna.', isRead: false, createdAt: '2026-05-29T07:00:00Z' },
 ]
 
 export const dogBreeds = ['Golden Retriever', 'Labrador Retriever', 'Berger Allemand', 'Bulldog Français', 'Cocker Spaniel', 'Husky Sibérien', 'Caniche', 'Beagle', 'Boxer', 'Rottweiler', 'Autre']
