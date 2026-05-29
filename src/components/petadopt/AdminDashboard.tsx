@@ -44,6 +44,13 @@ export default function AdminDashboard() {
 
   const [activeSection, setActiveSection] = useState<Section>('overview')
 
+  // Success toast
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type })
+    setTimeout(() => setToast(null), 3000)
+  }
+
   // Initialize data on first render
   useEffect(() => {
     if (adminAnimals.length === 0) {
@@ -411,7 +418,7 @@ export default function AdminDashboard() {
                               <Pencil className="h-3.5 w-3.5" /> Modifier
                             </Button>
                             {!a.isApproved && (
-                              <Button size="sm" className="flex-1 sm:flex-none sm:w-full text-xs gap-1.5 bg-green-500 hover:bg-green-600 text-white" onClick={() => approveAnimal(a.id)}>
+                              <Button size="sm" className="flex-1 sm:flex-none sm:w-full text-xs gap-1.5 bg-green-500 hover:bg-green-600 text-white" onClick={() => { approveAnimal(a.id); showToast(`${a.name} a été approuvé`) }}>
                                 <CheckCircle className="h-3.5 w-3.5" /> Approuver
                               </Button>
                             )}
@@ -536,7 +543,7 @@ export default function AdminDashboard() {
                             </div>
                             {u.bio && <p className="text-sm text-muted-foreground mt-1 line-clamp-1">{u.bio}</p>}
                           </div>
-                          {/* Action buttons */}
+                          {/* Action buttons - ALWAYS all 4 visible */}
                           <div className="flex sm:flex-col gap-2 shrink-0 sm:ml-2">
                             <Button size="sm" variant="outline" className="flex-1 sm:flex-none sm:w-full text-xs gap-1.5" onClick={() => { setSelectedItem(u); setShowUserDetail(true) }}>
                               <Eye className="h-3.5 w-3.5" /> Voir
@@ -544,15 +551,9 @@ export default function AdminDashboard() {
                             <Button size="sm" variant="outline" className="flex-1 sm:flex-none sm:w-full text-xs gap-1.5 text-petblue border-petblue/30 hover:bg-petblue/10" onClick={() => { setUserForm(u); setSelectedItem(u); setShowEditUser(true) }}>
                               <Pencil className="h-3.5 w-3.5" /> Modifier
                             </Button>
-                            {u.isBanned ? (
-                              <Button size="sm" variant="outline" className="flex-1 sm:flex-none sm:w-full text-xs gap-1.5 text-green-600 border-green-300 hover:bg-green-50" onClick={() => unbanUser(u.id)}>
-                                <UserCheck className="h-3.5 w-3.5" /> Débannir
-                              </Button>
-                            ) : (
-                              <Button size="sm" variant="outline" className="flex-1 sm:flex-none sm:w-full text-xs gap-1.5 text-amber-600 border-amber-300 hover:bg-amber-50" onClick={() => banUser(u.id)}>
-                                <Ban className="h-3.5 w-3.5" /> Bannir
-                              </Button>
-                            )}
+                            <Button size="sm" variant="outline" className={`flex-1 sm:flex-none sm:w-full text-xs gap-1.5 ${u.isBanned ? 'text-green-600 border-green-300 hover:bg-green-50' : 'text-amber-600 border-amber-300 hover:bg-amber-50'}`} onClick={() => { if (u.isBanned) { unbanUser(u.id); showToast(`${u.name} a été débanni`) } else { banUser(u.id); showToast(`${u.name} a été banni`) } }}>
+                              {u.isBanned ? <><UserCheck className="h-3.5 w-3.5" /> Débannir</> : <><Ban className="h-3.5 w-3.5" /> Bannir</>}
+                            </Button>
                             <Button size="sm" variant="outline" className="flex-1 sm:flex-none sm:w-full text-xs gap-1.5 text-destructive border-destructive/30 hover:bg-destructive/10" onClick={() => { setSelectedItem(u); setShowDeleteUser(true) }}>
                               <Trash2 className="h-3.5 w-3.5" /> Supprimer
                             </Button>
@@ -758,6 +759,14 @@ export default function AdminDashboard() {
 
       {/* ==================== DIALOGS ==================== */}
 
+      {/* Toast notification */}
+      {toast && (
+        <div className={`fixed bottom-6 right-6 z-[100] flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg text-white text-sm font-medium transition-all ${toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'}`}>
+          {toast.type === 'success' ? <CheckCircle className="h-5 w-5" /> : <XCircle className="h-5 w-5" />}
+          {toast.message}
+        </div>
+      )}
+
       {/* ADD ANIMAL */}
       <Dialog open={showAddAnimal} onOpenChange={setShowAddAnimal}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -853,6 +862,7 @@ export default function AdminDashboard() {
               })
               setShowAddAnimal(false)
               resetAnimalForm()
+              showToast(`${animalForm.name} a été ajouté`)
             }}>Ajouter</Button>
           </DialogFooter>
         </DialogContent>
@@ -881,7 +891,7 @@ export default function AdminDashboard() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowEditAnimal(false)}>Annuler</Button>
             <Button className="bg-petblue hover:bg-petblue-dark text-white" onClick={() => {
-              if (selectedItem) updateAnimal(selectedItem.id, animalForm)
+              if (selectedItem) { updateAnimal(selectedItem.id, animalForm); showToast(`${selectedItem.name} a été modifié`) }
               setShowEditAnimal(false)
             }}>Sauvegarder</Button>
           </DialogFooter>
@@ -897,7 +907,7 @@ export default function AdminDashboard() {
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowDeleteAnimal(false)}>Annuler</Button>
-            <Button variant="destructive" onClick={() => { if (selectedItem) deleteAnimal(selectedItem.id); setShowDeleteAnimal(false) }}>Supprimer</Button>
+            <Button variant="destructive" onClick={() => { if (selectedItem) { deleteAnimal(selectedItem.id); showToast(`${selectedItem.name} a été supprimé`) }; setShowDeleteAnimal(false) }}>Supprimer</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -963,6 +973,7 @@ export default function AdminDashboard() {
               })
               setShowAddUser(false)
               resetUserForm()
+              showToast(`${userForm.name} a été créé`)
             }}>Créer</Button>
           </DialogFooter>
         </DialogContent>
@@ -986,7 +997,7 @@ export default function AdminDashboard() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowEditUser(false)}>Annuler</Button>
             <Button className="bg-petblue hover:bg-petblue-dark text-white" onClick={() => {
-              if (selectedItem) updateUser(selectedItem.id, userForm)
+              if (selectedItem) { updateUser(selectedItem.id, userForm); showToast(`${selectedItem.name} a été modifié`) }
               setShowEditUser(false)
             }}>Sauvegarder</Button>
           </DialogFooter>
@@ -1002,7 +1013,7 @@ export default function AdminDashboard() {
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowDeleteUser(false)}>Annuler</Button>
-            <Button variant="destructive" onClick={() => { if (selectedItem) deleteUser(selectedItem.id); setShowDeleteUser(false) }}>Supprimer</Button>
+            <Button variant="destructive" onClick={() => { if (selectedItem) { deleteUser(selectedItem.id); showToast(`${selectedItem.name} a été supprimé`) }; setShowDeleteUser(false) }}>Supprimer</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
