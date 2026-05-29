@@ -1,0 +1,153 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String
+  password      String?
+  image         String?
+  role          String   @default("ADOPTER") // ADMIN, SHELTER, BREEDER, ADOPTER
+  phone         String?
+  address       String?
+  city          String?
+  country       String?
+  bio           String?
+  provider      String?  // google, facebook, credentials
+  providerId    String?
+  isVerified    Boolean  @default(false)
+  isBanned      Boolean  @default(false)
+  rating        Float    @default(0)
+  reviewCount   Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  animals       Animal[]
+  adoptions     Adoption[]   @relation("AdopterAdoptions")
+  soldAdoptions Adoption[]   @relation("SellerAdoptions")
+  reviews          Review[]
+  sellerReviews    Review[]       @relation("SellerReviews")
+  sentMessages     Message[]     @relation("Sender")
+  receivedMessages Message[]     @relation("Receiver")
+  favorites     Favorite[]
+  payments      Payment[]
+  notifications Notification[]
+}
+
+model Animal {
+  id            String   @id @default(cuid())
+  name          String
+  type          String   // DOG, CAT
+  breed         String
+  age           Int
+  ageUnit       String   @default("MONTHS") // MONTHS, YEARS
+  sex           String   // MALE, FEMALE
+  isVaccinated  Boolean  @default(false)
+  description   String
+  price         Float
+  images        String   @default("[]") // JSON array of image URLs
+  video         String?
+  location      String
+  city          String
+  country       String
+  status        String   @default("AVAILABLE") // AVAILABLE, RESERVED, ADOPTED
+  isApproved    Boolean  @default(false)
+  views         Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  sellerId      String
+  seller        User     @relation(fields: [sellerId], references: [id])
+  adoptions     Adoption[]
+  reviews       Review[]
+  favorites     Favorite[]
+}
+
+model Adoption {
+  id            String   @id @default(cuid())
+  adopterId     String
+  sellerId      String
+  animalId      String
+  status        String   @default("PENDING") // PENDING, APPROVED, REJECTED, COMPLETED, CANCELLED
+  message       String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  adopter       User     @relation("AdopterAdoptions", fields: [adopterId], references: [id])
+  seller        User     @relation("SellerAdoptions", fields: [sellerId], references: [id])
+  animal        Animal   @relation(fields: [animalId], references: [id])
+  payments      Payment[]
+}
+
+model Payment {
+  id            String   @id @default(cuid())
+  adoptionId    String
+  userId        String
+  amount        Float
+  currency      String   @default("EUR")
+  method        String   // CARD, PAYPAL, MOBILE_MONEY, STRIPE
+  status        String   @default("PENDING") // PENDING, COMPLETED, FAILED, REFUNDED
+  stripeId      String?
+  invoiceUrl    String?
+  createdAt     DateTime @default(now())
+
+  adoption      Adoption @relation(fields: [adoptionId], references: [id])
+  user          User     @relation(fields: [userId], references: [id])
+}
+
+model Message {
+  id            String   @id @default(cuid())
+  senderId      String
+  receiverId    String
+  content       String
+  imageUrl      String?
+  isRead        Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  sender        User     @relation("Sender", fields: [senderId], references: [id])
+  receiver      User     @relation("Receiver", fields: [receiverId], references: [id])
+}
+
+model Review {
+  id            String   @id @default(cuid())
+  reviewerId    String
+  sellerId      String
+  animalId      String
+  rating        Int      // 1-5
+  comment       String
+  createdAt     DateTime @default(now())
+
+  reviewer      User     @relation(fields: [reviewerId], references: [id])
+  seller        User     @relation("SellerReviews", fields: [sellerId], references: [id])
+  animal        Animal   @relation(fields: [animalId], references: [id])
+}
+
+model Favorite {
+  id            String   @id @default(cuid())
+  userId        String
+  animalId      String
+  createdAt     DateTime @default(now())
+
+  user          User     @relation(fields: [userId], references: [id])
+  animal        Animal   @relation(fields: [animalId], references: [id])
+
+  @@unique([userId, animalId])
+}
+
+model Notification {
+  id            String   @id @default(cuid())
+  userId        String
+  title         String
+  message       String
+  type          String   @default("INFO") // INFO, SUCCESS, WARNING, ERROR
+  isRead        Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  user          User     @relation(fields: [userId], references: [id])
+}
