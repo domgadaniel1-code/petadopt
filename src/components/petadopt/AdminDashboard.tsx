@@ -350,77 +350,80 @@ export default function AdminDashboard() {
                   </Card>
                 )}
 
-                {/* Animals table */}
-                <Card className="border-0 shadow-sm overflow-hidden">
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-muted/50">
-                        <tr>
-                          <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">Animal</th>
-                          <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">Type / Race</th>
-                          <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">Prix</th>
-                          <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">Ville</th>
-                          <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">Statut</th>
-                          <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">Approuvé</th>
-                          <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">Vues</th>
-                          <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filteredAnimals.map(a => (
-                          <tr key={a.id} className="border-t hover:bg-muted/30 transition-colors">
-                            <td className="px-4 py-3">
-                              <div className="flex items-center gap-3">
-                                <img src={a.images[0]} alt={a.name} className="h-10 w-10 rounded-lg object-cover" />
-                                <div>
-                                  <p className="text-sm font-medium">{a.name}</p>
-                                  <p className="text-xs text-muted-foreground">{a.age} {a.ageUnit === 'YEARS' ? 'ans' : 'mois'} - {a.sex === 'MALE' ? 'Mâle' : 'Femelle'}</p>
-                                </div>
-                              </div>
-                            </td>
-                            <td className="px-4 py-3">
-                              <div className="flex items-center gap-2">
-                                {a.type === 'DOG' ? <Dog className="h-4 w-4 text-petblue" /> : <Cat className="h-4 w-4 text-petorange" />}
-                                <span className="text-sm">{a.breed}</span>
-                              </div>
-                            </td>
-                            <td className="px-4 py-3 text-sm font-semibold">{a.price.toLocaleString('fr-FR')} €</td>
-                            <td className="px-4 py-3">
-                              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                                <MapPin className="h-3 w-3" /> {a.city}
-                              </div>
-                            </td>
-                            <td className="px-4 py-3">
-                              <Badge className={`${a.status === 'AVAILABLE' ? 'bg-green-500' : a.status === 'RESERVED' ? 'bg-amber-500' : 'bg-gray-500'} text-white border-0 text-xs`}>
-                                {a.status === 'AVAILABLE' ? 'Disponible' : a.status === 'RESERVED' ? 'Réservé' : 'Adopté'}
-                              </Badge>
-                            </td>
-                            <td className="px-4 py-3">
-                              {a.isApproved
-                                ? <CheckCircle className="h-5 w-5 text-green-500" />
-                                : <XCircle className="h-5 w-5 text-red-400 cursor-pointer hover:text-red-600" onClick={() => approveAnimal(a.id)} title="Approuver" />
-                              }
-                            </td>
-                            <td className="px-4 py-3 text-sm text-muted-foreground">{a.views}</td>
-                            <td className="px-4 py-3">
-                              <div className="flex gap-1">
-                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => { setSelectedItem(a); setShowAnimalDetail(true) }}><Eye className="h-3.5 w-3.5" /></Button>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 text-petblue" onClick={() => { setAnimalForm(a); setSelectedItem(a); setShowEditAnimal(true) }}><Pencil className="h-3.5 w-3.5" /></Button>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => { setSelectedItem(a); setShowDeleteAnimal(true) }}><Trash2 className="h-3.5 w-3.5" /></Button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                    {filteredAnimals.length === 0 && (
-                      <div className="p-12 text-center">
+                {/* Animals cards */}
+                <div className="space-y-3">
+                  {filteredAnimals.length === 0 && (
+                    <Card className="border-0 shadow-sm">
+                      <CardContent className="p-12 text-center">
                         <PawPrint className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
                         <p className="text-muted-foreground">Aucun animal trouvé</p>
-                      </div>
-                    )}
-                  </div>
-                </Card>
+                      </CardContent>
+                    </Card>
+                  )}
+                  {filteredAnimals.map(a => (
+                    <Card key={a.id} className="border-0 shadow-sm hover:shadow-md transition-shadow">
+                      <CardContent className="p-5">
+                        <div className="flex flex-col sm:flex-row gap-4">
+                          {/* Image + Info */}
+                          <img src={a.images[0]} alt={a.name} className="h-24 w-24 rounded-xl object-cover shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-2 mb-2">
+                              <div>
+                                <h3 className="font-semibold text-lg">{a.name}</h3>
+                                <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                  {a.type === 'DOG' ? <Dog className="h-4 w-4 text-petblue" /> : <Cat className="h-4 w-4 text-petorange" />}
+                                  <span className="text-sm text-muted-foreground">{a.breed}</span>
+                                  <span className="text-sm text-muted-foreground">•</span>
+                                  <span className="text-sm text-muted-foreground">{a.age} {a.ageUnit === 'YEARS' ? 'ans' : 'mois'}</span>
+                                  <span className="text-sm text-muted-foreground">•</span>
+                                  <span className="text-sm text-muted-foreground">{a.sex === 'MALE' ? 'Mâle' : 'Femelle'}</span>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2 shrink-0">
+                                <Badge className={`${a.status === 'AVAILABLE' ? 'bg-green-500' : a.status === 'RESERVED' ? 'bg-amber-500' : 'bg-gray-500'} text-white border-0`}>
+                                  {a.status === 'AVAILABLE' ? 'Disponible' : a.status === 'RESERVED' ? 'Réservé' : 'Adopté'}
+                                </Badge>
+                                {!a.isApproved && (
+                                  <Badge className="bg-red-500 text-white border-0">
+                                    <AlertCircle className="h-3 w-3 mr-1" /> Non approuvé
+                                  </Badge>
+                                )}
+                                {a.isApproved && (
+                                  <Badge className="bg-green-500/10 text-green-600 border-green-200">
+                                    <CheckCircle className="h-3 w-3 mr-1" /> Approuvé
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
+                              <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {a.city}</span>
+                              <span className="flex items-center gap-1"><Eye className="h-3 w-3" /> {a.views} vues</span>
+                              <span className="font-bold text-foreground">{a.price.toLocaleString('fr-FR')} €</span>
+                            </div>
+                            <p className="text-sm text-muted-foreground line-clamp-2">{a.description}</p>
+                          </div>
+                          {/* Action buttons */}
+                          <div className="flex sm:flex-col gap-2 shrink-0 sm:ml-2">
+                            <Button size="sm" variant="outline" className="flex-1 sm:flex-none sm:w-full text-xs gap-1.5" onClick={() => { setSelectedItem(a); setShowAnimalDetail(true) }}>
+                              <Eye className="h-3.5 w-3.5" /> Voir
+                            </Button>
+                            <Button size="sm" variant="outline" className="flex-1 sm:flex-none sm:w-full text-xs gap-1.5 text-petblue border-petblue/30 hover:bg-petblue/10" onClick={() => { setAnimalForm(a); setSelectedItem(a); setShowEditAnimal(true) }}>
+                              <Pencil className="h-3.5 w-3.5" /> Modifier
+                            </Button>
+                            {!a.isApproved && (
+                              <Button size="sm" className="flex-1 sm:flex-none sm:w-full text-xs gap-1.5 bg-green-500 hover:bg-green-600 text-white" onClick={() => approveAnimal(a.id)}>
+                                <CheckCircle className="h-3.5 w-3.5" /> Approuver
+                              </Button>
+                            )}
+                            <Button size="sm" variant="outline" className="flex-1 sm:flex-none sm:w-full text-xs gap-1.5 text-destructive border-destructive/30 hover:bg-destructive/10" onClick={() => { setSelectedItem(a); setShowDeleteAnimal(true) }}>
+                              <Trash2 className="h-3.5 w-3.5" /> Supprimer
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
               </div>
             )}
 
@@ -476,87 +479,94 @@ export default function AdminDashboard() {
                   </CardContent>
                 </Card>
 
-                {/* Users table */}
-                <Card className="border-0 shadow-sm overflow-hidden">
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-muted/50">
-                        <tr>
-                          <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">Utilisateur</th>
-                          <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">Email</th>
-                          <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">Rôle</th>
-                          <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">Ville</th>
-                          <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">Note</th>
-                          <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">Vérifié</th>
-                          <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">Statut</th>
-                          <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filteredUsers.map(u => (
-                          <tr key={u.id} className="border-t hover:bg-muted/30 transition-colors">
-                            <td className="px-4 py-3">
-                              <div className="flex items-center gap-3">
-                                <Avatar className="h-9 w-9"><AvatarFallback className="bg-petblue/10 text-petblue text-xs">{u.name.charAt(0)}</AvatarFallback></Avatar>
-                                <div>
-                                  <p className="text-sm font-medium">{u.name}</p>
-                                  {u.phone && <p className="text-xs text-muted-foreground">{u.phone}</p>}
-                                </div>
-                              </div>
-                            </td>
-                            <td className="px-4 py-3 text-sm text-muted-foreground">{u.email}</td>
-                            <td className="px-4 py-3">
-                              <Badge variant="outline" className={`text-xs ${
-                                u.role === 'ADMIN' ? 'border-purple-300 text-purple-600' :
-                                u.role === 'SHELTER' ? 'border-petorange text-petorange' :
-                                u.role === 'BREEDER' ? 'border-green-400 text-green-600' :
-                                'border-petblue text-petblue'
-                              }`}>
-                                {u.role === 'ADMIN' ? 'Admin' : u.role === 'SHELTER' ? 'Refuge' : u.role === 'BREEDER' ? 'Éleveur' : 'Adoptant'}
-                              </Badge>
-                            </td>
-                            <td className="px-4 py-3 text-sm text-muted-foreground">{u.city || '-'}</td>
-                            <td className="px-4 py-3">
-                              <div className="flex items-center gap-1">
-                                <Star className="h-3 w-3 text-amber-400 fill-amber-400" />
-                                <span className="text-sm">{u.rating}</span>
-                              </div>
-                            </td>
-                            <td className="px-4 py-3">
-                              {u.isVerified
-                                ? <CheckCircle className="h-5 w-5 text-green-500" />
-                                : <XCircle className="h-5 w-5 text-gray-300 cursor-pointer hover:text-green-500" onClick={() => verifyUser(u.id)} title="Vérifier" />
-                              }
-                            </td>
-                            <td className="px-4 py-3">
-                              <Badge className={`${u.isBanned ? 'bg-red-500' : 'bg-green-500'} text-white border-0 text-xs`}>
-                                {u.isBanned ? 'Banni' : 'Actif'}
-                              </Badge>
-                            </td>
-                            <td className="px-4 py-3">
-                              <div className="flex gap-1">
-                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => { setSelectedItem(u); setShowUserDetail(true) }}><Eye className="h-3.5 w-3.5" /></Button>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 text-petblue" onClick={() => { setUserForm(u); setSelectedItem(u); setShowEditUser(true) }}><Pencil className="h-3.5 w-3.5" /></Button>
-                                {u.isBanned ? (
-                                  <Button variant="ghost" size="icon" className="h-8 w-8 text-green-500" onClick={() => unbanUser(u.id)} title="Débannir"><UserCheck className="h-3.5 w-3.5" /></Button>
-                                ) : (
-                                  <Button variant="ghost" size="icon" className="h-8 w-8 text-amber-500" onClick={() => banUser(u.id)} title="Bannir"><Ban className="h-3.5 w-3.5" /></Button>
-                                )}
-                                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => { setSelectedItem(u); setShowDeleteUser(true) }}><Trash2 className="h-3.5 w-3.5" /></Button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                    {filteredUsers.length === 0 && (
-                      <div className="p-12 text-center">
+                {/* Users cards */}
+                <div className="space-y-3">
+                  {filteredUsers.length === 0 && (
+                    <Card className="border-0 shadow-sm">
+                      <CardContent className="p-12 text-center">
                         <Users className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
                         <p className="text-muted-foreground">Aucun utilisateur trouvé</p>
-                      </div>
-                    )}
-                  </div>
-                </Card>
+                      </CardContent>
+                    </Card>
+                  )}
+                  {filteredUsers.map(u => (
+                    <Card key={u.id} className={`border-0 shadow-sm hover:shadow-md transition-shadow ${u.isBanned ? 'opacity-60' : ''}`}>
+                      <CardContent className="p-5">
+                        <div className="flex flex-col sm:flex-row gap-4">
+                          {/* Avatar + Info */}
+                          <Avatar className="h-16 w-16 shrink-0">
+                            <AvatarFallback className="bg-petblue/10 text-petblue text-xl font-bold">{u.name.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-2 mb-2">
+                              <div>
+                                <h3 className="font-semibold text-lg">{u.name}</h3>
+                                <p className="text-sm text-muted-foreground">{u.email}</p>
+                              </div>
+                              <div className="flex items-center gap-2 shrink-0">
+                                <Badge variant="outline" className={`text-xs ${
+                                  u.role === 'ADMIN' ? 'border-purple-300 text-purple-600' :
+                                  u.role === 'SHELTER' ? 'border-petorange text-petorange' :
+                                  u.role === 'BREEDER' ? 'border-green-400 text-green-600' :
+                                  'border-petblue text-petblue'
+                                }`}>
+                                  {u.role === 'ADMIN' ? 'Admin' : u.role === 'SHELTER' ? 'Refuge' : u.role === 'BREEDER' ? 'Éleveur' : 'Adoptant'}
+                                </Badge>
+                                <Badge className={`${u.isBanned ? 'bg-red-500' : 'bg-green-500'} text-white border-0`}>
+                                  {u.isBanned ? 'Banni' : 'Actif'}
+                                </Badge>
+                                {u.isVerified ? (
+                                  <Badge className="bg-green-500/10 text-green-600 border-green-200">
+                                    <CheckCircle className="h-3 w-3 mr-1" /> Vérifié
+                                  </Badge>
+                                ) : (
+                                  <Badge className="bg-amber-500/10 text-amber-600 border-amber-200">
+                                    <AlertCircle className="h-3 w-3 mr-1" /> Non vérifié
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                              {u.city && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {u.city}</span>}
+                              {u.phone && <span>{u.phone}</span>}
+                              <span className="flex items-center gap-1">
+                                <Star className="h-3 w-3 text-amber-400 fill-amber-400" /> {u.rating}/5
+                              </span>
+                              <span>{u.reviewCount} avis</span>
+                            </div>
+                            {u.bio && <p className="text-sm text-muted-foreground mt-1 line-clamp-1">{u.bio}</p>}
+                          </div>
+                          {/* Action buttons */}
+                          <div className="flex sm:flex-col gap-2 shrink-0 sm:ml-2">
+                            <Button size="sm" variant="outline" className="flex-1 sm:flex-none sm:w-full text-xs gap-1.5" onClick={() => { setSelectedItem(u); setShowUserDetail(true) }}>
+                              <Eye className="h-3.5 w-3.5" /> Voir
+                            </Button>
+                            <Button size="sm" variant="outline" className="flex-1 sm:flex-none sm:w-full text-xs gap-1.5 text-petblue border-petblue/30 hover:bg-petblue/10" onClick={() => { setUserForm(u); setSelectedItem(u); setShowEditUser(true) }}>
+                              <Pencil className="h-3.5 w-3.5" /> Modifier
+                            </Button>
+                            {!u.isVerified && (
+                              <Button size="sm" className="flex-1 sm:flex-none sm:w-full text-xs gap-1.5 bg-petblue hover:bg-petblue-dark text-white" onClick={() => verifyUser(u.id)}>
+                                <UserCheck className="h-3.5 w-3.5" /> Vérifier
+                              </Button>
+                            )}
+                            {u.isBanned ? (
+                              <Button size="sm" variant="outline" className="flex-1 sm:flex-none sm:w-full text-xs gap-1.5 text-green-600 border-green-300 hover:bg-green-50" onClick={() => unbanUser(u.id)}>
+                                <UserCheck className="h-3.5 w-3.5" /> Débannir
+                              </Button>
+                            ) : (
+                              <Button size="sm" variant="outline" className="flex-1 sm:flex-none sm:w-full text-xs gap-1.5 text-amber-600 border-amber-300 hover:bg-amber-50" onClick={() => banUser(u.id)}>
+                                <Ban className="h-3.5 w-3.5" /> Bannir
+                              </Button>
+                            )}
+                            <Button size="sm" variant="outline" className="flex-1 sm:flex-none sm:w-full text-xs gap-1.5 text-destructive border-destructive/30 hover:bg-destructive/10" onClick={() => { setSelectedItem(u); setShowDeleteUser(true) }}>
+                              <Trash2 className="h-3.5 w-3.5" /> Supprimer
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
               </div>
             )}
 
